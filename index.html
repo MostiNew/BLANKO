@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Blankoverordnung Clinical + Revenue Intelligence</title>
+
+<style>
+body{font-family:Arial;margin:0;background:#f4f7fb;color:#333}
+header{background:#2a6f97;color:#fff;padding:18px;text-align:center}
+.container{max-width:1100px;margin:auto;padding:20px}
+.card{background:#fff;padding:16px;margin-bottom:16px;border-radius:10px;box-shadow:0 3px 10px rgba(0,0,0,0.08)}
+h2{color:#2a6f97;margin-top:0}
+label{display:block;margin-top:10px;font-weight:bold}
+input,select,textarea{width:100%;padding:8px;margin-top:4px}
+button{margin-top:10px;padding:10px;background:#2a6f97;color:#fff;border:none;cursor:pointer}
+button:hover{background:#1d4f6d}
+
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.kpi{background:#eef6fa;padding:10px;border-radius:8px;text-align:center}
+.kpi h3{margin:0;color:#2a6f97}
+
+pre{background:#f9fafb;padding:10px;white-space:pre-wrap}
+
+@media(max-width:800px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>Clinical + Revenue Intelligence System</h1>
+<p>ICD → ICF → Outcome → Decision → Revenue Optimization</p>
+</header>
+
+<div class="container">
+
+<!-- PATIENT -->
+<div class="card">
+<h2>1. Patient</h2>
+
+<label>Diagnosis</label>
+<input id="diagnosis"/>
+
+<label>Visits Used</label>
+<input type="number" id="visitsUsed"/>
+
+<label>Planned Visits</label>
+<input type="number" id="plannedVisits"/>
+</div>
+
+<!-- TREATMENT -->
+<div class="card">
+<h2>2. Treatment</h2>
+
+<label>Goal</label>
+<select id="goal">
+<option>Reduce Pain</option>
+<option>Improve ROM</option>
+<option>Increase Strength</option>
+<option>Improve Function</option>
+</select>
+
+<label>Intervention</label>
+<select id="intervention">
+<option>KG</option>
+<option>MT</option>
+<option>KG-Gerät</option>
+<option>MLD</option>
+</select>
+
+<label>Frequency</label>
+<select id="frequency">
+<option>1x/week</option>
+<option>2x/week</option>
+<option>3x/week</option>
+</select>
+
+<label>Justification</label>
+<textarea id="justification"></textarea>
+</div>
+
+<!-- ICF -->
+<div class="card">
+<h2>3. ICF Function Layer</h2>
+
+<div class="grid">
+<div class="kpi"><h3 id="icfImpairments">-</h3><p>Impairments</p></div>
+<div class="kpi"><h3 id="icfGoal">-</h3><p>ICF Goal</p></div>
+</div>
+</div>
+
+<!-- OUTCOME -->
+<div class="card">
+<h2>4. Outcome Tracking</h2>
+
+<label>Pain Before</label>
+<input type="number" id="painBefore"/>
+
+<label>Pain After</label>
+<input type="number" id="painAfter"/>
+
+<label>ROM Before</label>
+<input type="number" id="romBefore"/>
+
+<label>ROM After</label>
+<input type="number" id="romAfter"/>
+</div>
+
+<!-- REVENUE -->
+<div class="card">
+<h2>5. Revenue Model</h2>
+
+<label>€ per session</label>
+<input type="number" id="ratePerSession" value="30"/>
+
+<label>Minutes per session</label>
+<input type="number" id="timePerSession" value="20"/>
+</div>
+
+<!-- SOAP -->
+<div class="card">
+<h2>6. SOAP Generator</h2>
+
+<label>Subjective</label>
+<textarea id="subjective"></textarea>
+
+<label>Objective</label>
+<textarea id="objective"></textarea>
+
+<button onclick="runAll()">Run Clinical + Revenue Intelligence</button>
+
+<pre id="soapOutput"></pre>
+
+<button onclick="window.print()">Export</button>
+</div>
+
+<!-- DASHBOARD -->
+<div class="card">
+<h2>7. Intelligence Dashboard</h2>
+
+<div class="grid">
+
+<div class="kpi"><h3 id="auditScore">0%</h3><p>Audit Score</p></div>
+<div class="kpi"><h3 id="auditRisk">-</h3><p>Audit Risk</p></div>
+
+<div class="kpi"><h3 id="progressScore">0%</h3><p>Progress</p></div>
+<div class="kpi"><h3 id="progressStatus">-</h3><p>Status</p></div>
+
+<div class="kpi"><h3 id="expectedGoal">-</h3><p>Expected Goal</p></div>
+<div class="kpi"><h3 id="pathwayMatch">-</h3><p>Pathway</p></div>
+
+<div class="kpi"><h3 id="recommendation">-</h3><p>Decision</p></div>
+<div class="kpi"><h3 id="recommendationReason">-</h3><p>Reason</p></div>
+
+<div class="kpi"><h3 id="revenueTotal">0€</h3><p>Revenue</p></div>
+<div class="kpi"><h3 id="efficiency">-</h3><p>Efficiency</p></div>
+<div class="kpi"><h3 id="rpm">-</h3><p>€/Minute</p></div>
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+/* ================= PIPELINE ================= */
+function runAll(){
+  soap();
+  audit();
+  progress();
+  pathway();
+  icf();
+  decision();
+  revenue();
+}
+
+/* ================= SOAP ================= */
+function soap(){
+
+  const s = document.getElementById("subjective").value;
+  const o = document.getElementById("objective").value;
+
+  document.getElementById("soapOutput").textContent =
+`S: ${s}
+O: ${o}
+A: Functional rehab required
+P: Continue treatment plan`;
+}
+
+/* ================= AUDIT ================= */
+function audit(){
+
+  let score = 100;
+
+  if(!subjective()) score -= 25;
+  if(!objective()) score -= 25;
+  if(!document.getElementById("justification").value) score -= 30;
+
+  let risk = "Low";
+  if(score < 80) risk = "Medium";
+  if(score < 50) risk = "High";
+
+  document.getElementById("auditScore").textContent = score + "%";
+  document.getElementById("auditRisk").textContent = risk;
+}
+
+/* helpers */
+const subjective = () => document.getElementById("subjective").value;
+const objective = () => document.getElementById("objective").value;
+
+/* ================= PROGRESS ================= */
+function progress(){
+
+  const pb = +document.getElementById("painBefore").value;
+  const pa = +document.getElementById("painAfter").value;
+  const rb = +document.getElementById("romBefore").value;
+  const ra = +document.getElementById("romAfter").value;
+
+  let p = pb ? ((pb-pa)/pb)*100 : 0;
+  let r = rb ? ((ra-rb)/rb)*100 : 0;
+
+  let total = Math.round((p+r)/2);
+
+  let status = "No progress";
+  if(total>10) status="Moderate";
+  if(total>25) status="Strong";
+
+  document.getElementById("progressScore").textContent = total+"%";
+  document.getElementById("progressStatus").textContent = status;
+}
+
+/* ================= PATHWAY ================= */
+function expectedGoal(d,v){
+
+  d = d.toLowerCase();
+
+  if(d.includes("shoulder")){
+    if(v<=2) return "Reduce Pain";
+    if(v<=5) return "Improve ROM";
+    return "Increase Strength";
+  }
+
+  if(d.includes("back")||d.includes("lumbar")){
+    if(v<=2) return "Reduce Pain";
+    if(v<=5) return "Improve ROM";
+    return "Increase Strength";
+  }
+
+  return "Improve Function";
+}
+
+function pathway(){
+
+  const d = document.getElementById("diagnosis").value;
+  const v = +document.getElementById("visitsUsed").value || 0;
+  const g = document.getElementById("goal").value;
+
+  const exp = expectedGoal(d,v);
+
+  document.getElementById("expectedGoal").textContent = exp;
+  document.getElementById("pathwayMatch").textContent = exp===g ? "Yes":"No";
+}
+
+/* ================= ICF ================= */
+function icf(){
+
+  const d = document.getElementById("diagnosis").value.toLowerCase();
+
+  let imp="", g="";
+
+  if(d.includes("shoulder")){
+    imp="↓ ROM, pain, weakness";
+    g="Restore elevation & function";
+  } else if(d.includes("back")){
+    imp="pain, instability, mobility loss";
+    g="Improve stability & function";
+  } else {
+    imp="functional limitation";
+    g="Improve function";
+  }
+
+  document.getElementById("icfImpairments").textContent = imp;
+  document.getElementById("icfGoal").textContent = g;
+}
+
+/* ================= DECISION ================= */
+function decision(){
+
+  const risk = document.getElementById("auditRisk").textContent;
+  const progress = +document.getElementById("progressScore").textContent;
+  const match = document.getElementById("pathwayMatch").textContent;
+  const v = +document.getElementById("visitsUsed").value;
+
+  let d="", r="";
+
+  if(risk==="High"){
+    d="Reassess"; r="Audit risk";
+  }
+  else if(match==="No"){
+    d="Reassess"; r="Pathway mismatch";
+  }
+  else if(progress>=70){
+    d="Discharge"; r="Goal achieved";
+  }
+  else if(progress<20 && v>=3){
+    d="Reassess"; r="Low progress";
+  }
+  else {
+    d="Continue"; r="Within expected curve";
+  }
+
+  document.getElementById("recommendation").textContent = d;
+  document.getElementById("recommendationReason").textContent = r;
+}
+
+/* ================= REVENUE ================= */
+function revenue(){
+
+  const visits = +document.getElementById("visitsUsed").value || 0;
+  const rate = +document.getElementById("ratePerSession").value || 0;
+  const time = +document.getElementById("timePerSession").value || 1;
+
+  const revenue = visits * rate;
+  const minutes = visits * time;
+
+  const rpm = minutes ? revenue/minutes : 0;
+
+  let efficiency = "Neutral";
+  if(rpm > 1.2) efficiency="Efficient 🟢";
+  if(rpm < 0.6) efficiency="Inefficient 🔴";
+
+  document.getElementById("revenueTotal").textContent = revenue + "€";
+  document.getElementById("rpm").textContent = rpm.toFixed(2)+" €/min";
+  document.getElementById("efficiency").textContent = efficiency;
+}
+
+</script>
+
+</body>
+</html>
