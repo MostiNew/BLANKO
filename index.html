@@ -3,38 +3,49 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>PhysioIntel OS</title>
+<title>Physio Clinical System</title>
 
 <style>
 body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,sans-serif;
-  background:linear-gradient(135deg,#eef3f8,#f7fafc);
+  background:#f4f7fb;
   color:#1f2a37;
 }
 
 header{
-  padding:18px;
+  padding:16px;
   text-align:center;
-  background:rgba(42,111,151,0.95);
+  background:#2a6f97;
   color:white;
-  backdrop-filter:blur(10px);
 }
 
-.container{max-width:900px;margin:auto;padding:14px;}
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:14px;
+}
 
 .card{
-  background:rgba(255,255,255,0.75);
-  backdrop-filter:blur(12px);
-  border-radius:16px;
+  background:white;
+  border-radius:14px;
   padding:14px;
   margin-bottom:14px;
-  box-shadow:0 8px 24px rgba(0,0,0,0.06);
+  box-shadow:0 4px 12px rgba(0,0,0,0.06);
 }
 
-h2{margin:0 0 10px;color:#2a6f97;font-size:18px}
+h2{
+  margin:0 0 10px;
+  font-size:16px;
+  color:#2a6f97;
+}
 
-label{font-size:13px;font-weight:600;display:block;margin-top:10px}
+label{
+  display:block;
+  margin-top:10px;
+  font-size:13px;
+  font-weight:600;
+}
 
 input,select,textarea{
   width:100%;
@@ -49,31 +60,39 @@ button{
   width:100%;
   padding:12px;
   margin-top:10px;
-  border:none;
-  border-radius:12px;
   background:#2a6f97;
   color:white;
+  border:none;
+  border-radius:10px;
   font-weight:600;
 }
 
 button:hover{opacity:0.9}
 
-.grid{display:grid;grid-template-columns:1fr;gap:10px}
+.grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:10px;
+}
 
 .kpi{
-  background:rgba(240,248,255,0.7);
+  background:#eef6fa;
   padding:10px;
-  border-radius:12px;
+  border-radius:10px;
   text-align:center;
 }
 
-.kpi h3{margin:0;color:#2a6f97;font-size:16px}
+.kpi h3{
+  margin:0;
+  color:#2a6f97;
+}
 
-canvas{
-  width:100%;
-  background:#fff;
+pre{
+  white-space:pre-wrap;
+  background:#f8fafc;
+  padding:10px;
   border-radius:10px;
-  margin-top:10px;
+  font-size:12px;
 }
 
 @media(min-width:700px){
@@ -84,7 +103,7 @@ footer{
   text-align:center;
   font-size:12px;
   padding:20px;
-  color:#6b7280;
+  color:#666;
 }
 </style>
 </head>
@@ -92,206 +111,246 @@ footer{
 <body>
 
 <header>
-<h2>PhysioIntel OS</h2>
-<p>Clinical Intelligence • Revenue • Timeline • Analytics</p>
-<small>© 2026 Moustafa Ali | fotmostaFA@gmail.com</small>
+<h2>Physio Clinical System</h2>
+<p>ICD • CPT • Revenue • Reports • Timeline</p>
+<small>© 2026 | DPTMOSTAFA@gmail.com</small>
 </header>
 
 <div class="container">
 
-<!-- THERAPIST -->
+<!-- 1 ICD -->
 <div class="card">
-<h2>Therapist</h2>
-<select id="therapistSelect">
-<option value="0">Therapist A</option>
-<option value="1">Therapist B</option>
-<option value="2">Therapist C</option>
-</select>
-</div>
+<h2>1. Diagnosis (ICD)</h2>
 
-<!-- PATIENT -->
-<div class="card">
-<h2>Patient</h2>
-<label>Diagnosis</label>
-<input id="diagnosis"/>
+<label>ICD Code</label>
+<select id="icd">
+  <option value="M54.5">M54.5 - Low back pain</option>
+  <option value="M75.1">M75.1 - Rotator cuff syndrome</option>
+  <option value="M17.9">M17.9 - Knee osteoarthritis</option>
+  <option value="M25.5">M25.5 - Joint pain</option>
+  <option value="M62.8">M62.8 - Muscle disorder</option>
+  <option value="Z98.8">Z98.8 - Post-surgical state</option>
+</select>
+
 <label>Visits</label>
-<input type="number" id="visitsUsed"/>
+<input type="number" id="visits"/>
 </div>
 
-<!-- TREATMENT -->
+<!-- 2 CPT -->
 <div class="card">
-<h2>Treatment</h2>
+<h2>2. Procedure Selection (CPT)</h2>
 
-<select id="intervention">
-<option>KG</option>
-<option>MT</option>
-<option>NEURO</option>
-<option>GAIT</option>
-<option>CORE</option>
-<option>STRENGTH</option>
-</select>
+<label>Primary Procedure</label>
+<select id="proc"></select>
 
-<button onclick="runAll()">Run System</button>
-<button onclick="saveCase()">Save Case</button>
+<label>Secondary Procedure</label>
+<select id="proc2"></select>
+
+<button onclick="calculate()">Calculate Case</button>
 </div>
 
-<!-- SOAP -->
+<!-- 3 OUTCOME -->
 <div class="card">
-<h2>SOAP Output</h2>
-<textarea id="subjective" placeholder="Subjective"></textarea>
-<textarea id="objective" placeholder="Objective"></textarea>
-
-<pre id="output"></pre>
-</div>
-
-<!-- DASHBOARD -->
-<div class="card">
-<h2>Dashboard</h2>
+<h2>3. Outcome</h2>
 
 <div class="grid">
-<div class="kpi"><h3 id="progress">0%</h3><p>Progress</p></div>
-<div class="kpi"><h3 id="audit">-</h3><p>Audit</p></div>
-<div class="kpi"><h3 id="decision">-</h3><p>Decision</p></div>
 <div class="kpi"><h3 id="revenue">0€</h3><p>Revenue</p></div>
 <div class="kpi"><h3 id="rpm">0</h3><p>€/min</p></div>
-<div class="kpi"><h3 id="eff">-</h3><p>Efficiency</p></div>
+<div class="kpi"><h3 id="status">-</h3><p>Efficiency</p></div>
 </div>
 </div>
 
-<!-- TIMELINE -->
+<!-- 4 RULES -->
 <div class="card">
-<h2>Patient Timeline</h2>
-<select id="timelineSelect"></select>
-<button onclick="renderTimeline()">Load Timeline</button>
+<h2>4. Procedure Suggestions (ICD Rules)</h2>
+
+<button onclick="suggest()">Generate Suggestions</button>
+<pre id="suggestions"></pre>
+</div>
+
+<!-- 5 REPORT -->
+<div class="card">
+<h2>5. Clinical Report</h2>
+
+<button onclick="generateReport()">Generate Report</button>
+<pre id="report"></pre>
+</div>
+
+<!-- 6 TIMELINE -->
+<div class="card">
+<h2>6. Case Timeline</h2>
+
+<button onclick="saveCase()">Save Case</button>
+<button onclick="render()">Show Timeline</button>
+
 <div id="timeline"></div>
-</div>
-
-<!-- CHARTS -->
-<div class="card">
-<h2>Clinical Trend Analytics</h2>
-<button onclick="renderCharts()">Generate Charts</button>
-<canvas id="painChart"></canvas>
-<canvas id="romChart"></canvas>
 </div>
 
 </div>
 
 <footer>
-PhysioIntel OS — Confidential System Prototype  
-Contact: fotmostaFA@gmail.com
+Physio System — Structured Clinical Documentation Tool  
+Contact: DPTMOSTAFA@gmail.com
 </footer>
 
 <script>
 
-/* ================= DATA ================= */
-let therapists=[
- {name:"A",cases:[]},
- {name:"B",cases:[]},
- {name:"C",cases:[]}
+/* ================= ICD ================= */
+const ICD_TEXT={
+ "M54.5":"Low back pain",
+ "M75.1":"Rotator cuff syndrome",
+ "M17.9":"Knee osteoarthritis",
+ "M25.5":"Joint pain",
+ "M62.8":"Muscle disorder",
+ "Z98.8":"Post-surgical state"
+};
+
+/* ================= CPT ================= */
+const CPT=[
+ {name:"KG - Therapeutic Exercise",rate:30},
+ {name:"MT - Manual Therapy",rate:35},
+ {name:"Neuro Rehab",rate:38},
+ {name:"Gait Training",rate:34},
+ {name:"Core Stability",rate:32},
+ {name:"Strength Training",rate:31},
+ {name:"Functional Training",rate:33},
+ {name:"Post-op Rehab",rate:36}
 ];
 
-/* ================= RUN SYSTEM ================= */
-function runAll(){
- progress();
- audit();
- decision();
- revenue();
- soap();
+/* fill CPT */
+function fill(){
+ let p=document.getElementById("proc");
+ let p2=document.getElementById("proc2");
+
+ CPT.forEach((c,i)=>{
+  let o=document.createElement("option");
+  o.value=i;
+  o.text=c.name;
+  p.appendChild(o.cloneNode(true));
+  p2.appendChild(o);
+ });
 }
+fill();
 
-/* ================= CORE ================= */
-function progress(){document.getElementById("progress").textContent="30%";}
-function audit(){document.getElementById("audit").textContent="Medium";}
-function decision(){document.getElementById("decision").textContent="Continue";}
+/* ================= DATA ================= */
+let cases=[];
 
-/* ================= REVENUE ================= */
-function revenue(){
- let v=+document.getElementById("visitsUsed").value||0;
- let rate=30;
- let rev=v*rate;
- let rpm=rev/(v*20||1);
+/* ================= CALC ================= */
+function calculate(){
 
- document.getElementById("revenue").textContent=rev+"€";
+ let v=+document.getElementById("visits").value||0;
+
+ let p1=CPT[document.getElementById("proc").value];
+ let p2=CPT[document.getElementById("proc2").value];
+
+ let rate=(p1.rate+p2.rate)/2;
+
+ let revenue=v*rate;
+ let rpm=revenue/(v*20||1);
+
+ document.getElementById("revenue").textContent=revenue+"€";
  document.getElementById("rpm").textContent=rpm.toFixed(2);
- document.getElementById("eff").textContent=
- rpm>1.2?"Efficient":rpm<0.7?"Inefficient":"Neutral";
+
+ document.getElementById("status").textContent=
+ rpm>1.2?"Efficient":rpm<0.7?"Inefficient":"Normal";
 }
 
-/* ================= SOAP ================= */
-function soap(){
- document.getElementById("output").textContent=
-"S: symptoms\nO: findings\nA: rehab\nP: continue";
+/* ================= RULE ENGINE ================= */
+function suggest(){
+
+ const icd=document.getElementById("icd").value;
+
+ let out="Suggested Procedures:\n\n";
+
+ switch(icd){
+
+  case "M75.1":
+   out+="- MT Manual Therapy\n- KG Exercise\n- Functional Training\n";
+   break;
+
+  case "M54.5":
+   out+="- Core Stability\n- MT Manual Therapy\n- Neuro Rehab\n";
+   break;
+
+  case "M17.9":
+   out+="- Strength Training\n- Gait Training\n- Functional Training\n";
+   break;
+
+  case "Z98.8":
+   out+="- Post-op Rehab\n- KG\n- MT\n";
+   break;
+
+  default:
+   out+="- KG Exercise\n- Functional Training\n";
+ }
+
+ document.getElementById("suggestions").textContent=out;
 }
 
-/* ================= SAVE CASE ================= */
+/* ================= REPORT ================= */
+function generateReport(){
+
+ const icd=document.getElementById("icd").value;
+ const dx=ICD_TEXT[icd]||"Not specified";
+ const v=document.getElementById("visits").value||0;
+
+ let p1=CPT[document.getElementById("proc").value];
+ let p2=CPT[document.getElementById("proc2").value];
+
+ let report="";
+
+ report+="=== PHYSIOTHERAPY REPORT ===\n\n";
+ report+="ICD: "+icd+"\n";
+ report+="Diagnosis: "+dx+"\n";
+ report+="Sessions: "+v+"\n\n";
+
+ report+="Procedures:\n";
+ report+="- "+p1.name+"\n";
+ report+="- "+p2.name+"\n\n";
+
+ report+="Clinical Justification:\n";
+
+ if(icd==="M75.1"){
+  report+="- Shoulder dysfunction with ROM limitation\n";
+ }
+ else if(icd==="M54.5"){
+  report+="- Lumbar dysfunction with instability\n";
+ }
+ else if(icd==="M17.9"){
+  report+="- Knee degeneration with functional limitation\n";
+ }
+ else{
+  report+="- Functional impairment requiring physiotherapy\n";
+ }
+
+ report+="\nOutcome: Functional improvement expected\n";
+
+ document.getElementById("report").textContent=report;
+}
+
+/* ================= SAVE ================= */
 function saveCase(){
- let i=document.getElementById("therapistSelect").value;
 
- therapists[i].cases.push({
-  dx:document.getElementById("diagnosis").value,
-  rev:document.getElementById("revenue").textContent,
-  prog:document.getElementById("progress").textContent
+ cases.push({
+  icd:document.getElementById("icd").value,
+  rev:document.getElementById("revenue").textContent
  });
 
- alert("Saved");
- updateTimelineSelect();
+ alert("Case saved");
 }
 
 /* ================= TIMELINE ================= */
-function updateTimelineSelect(){
- let s=document.getElementById("timelineSelect");
- s.innerHTML="";
- therapists.forEach((t,i)=>{
-  let o=document.createElement("option");
-  o.value=i;o.text=t.name;
-  s.appendChild(o);
- });
-}
-
-function renderTimeline(){
- let i=document.getElementById("timelineSelect").value;
- let t=therapists[i];
+function render(){
 
  document.getElementById("timeline").innerHTML=
- t.cases.map((c,k)=>`
+ cases.map((c,i)=>`
  <div class="card">
-  <b>Case ${k+1}</b><br>
-  Dx: ${c.dx}<br>
-  Revenue: ${c.rev}<br>
-  Progress: ${c.prog}
+  <b>Case ${i+1}</b><br>
+  ICD: ${c.icd}<br>
+  Revenue: ${c.rev}
  </div>
- `).join("") || "No data";
+ `).join("") || "No cases yet";
 }
-
-/* ================= CHARTS ================= */
-function draw(canvas,data,label){
- let c=document.getElementById(canvas);
- let ctx=c.getContext("2d");
- c.width=c.offsetWidth;
-
- ctx.clearRect(0,0,c.width,120);
- ctx.beginPath();
-
- let step=c.width/(data.length-1);
-
- data.forEach((v,i)=>{
-  let x=i*step;
-  let y=100-v;
-  i?ctx.lineTo(x,y):ctx.moveTo(x,y);
- });
-
- ctx.strokeStyle="#2a6f97";
- ctx.stroke();
- ctx.fillText(label,10,10);
-}
-
-function renderCharts(){
- draw("painChart",[80,60,50,40,30,20],"Pain ↓");
- draw("romChart",[20,30,40,60,70,90],"ROM ↑");
-}
-
-/* init */
-updateTimelineSelect();
 
 </script>
 
